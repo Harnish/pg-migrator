@@ -33,7 +33,7 @@ The repository includes a multi-stage Dockerfile that builds a static Go binary 
 
 Build:
 ```bash
-docker build -t registry.whiskeyonthe.rocks/pg-migrator/pg-migrator:latest .
+docker build -t registry.your.domain/pg-migrator/pg-migrator:latest .
 ```
 Dockerfile: [Dockerfile](Dockerfile)
 
@@ -42,13 +42,13 @@ Run container locally (example):
 docker run --rm \
   -e SRC_HOST=... -e SRC_PORT=5432 -e SRC_USER=... -e SRC_PASSWORD=... \
   -e DST_HOST=... -e DST_PORT=5432 -e DST_USER=... -e DST_PASSWORD=... \
-  registry.whiskeyonthe.rocks/pg-migrator/pg-migrator:latest \
+  registry.your.domain/pg-migrator/pg-migrator:latest \
   -dump-dir=/tmp/pg_migration
 ```
 
 Push to registry:
 ```bash
-docker push registry.whiskeyonthe.rocks/pg-migrator/pg-migrator:latest
+docker push registry.your.domain/pg-migrator/pg-migrator:latest
 ```
 
 Kubernetes usage
