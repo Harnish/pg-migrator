@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pg-migrator
-        image: registry.whiskeyonthe.rocks/pg-migrator/pg-migrator:latest
+        image: registry.your.domain/pg-migrator/pg-migrator:latest
         imagePullPolicy: IfNotPresent
         command:
           - /usr/local/bin/pg-migrator
