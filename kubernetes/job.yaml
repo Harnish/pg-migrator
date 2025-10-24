@@ -1,0 +1,93 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pg-migration-job
+  namespace: default
+spec:
+  # Prevent automatic retries - migration should be run manually
+  backoffLimit: 0
+  # Clean up automatically after 24 hours
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app: pg-migration
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pg-migrator
+        image: registry.whiskeyonthe.rocks/pg-migrator/pg-migrator:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/pg-migrator
+        args:
+          - -src-host=$(SRC_HOST)
+          - -src-port=$(SRC_PORT)
+          - -src-user=$(SRC_USER)
+          - -src-password=$(SRC_PASSWORD)
+          - -dst-host=$(DST_HOST)
+          - -dst-port=$(DST_PORT)
+          - -dst-user=$(DST_USER)
+          - -dst-password=$(DST_PASSWORD)
+          - -dump-dir=$(DUMP_DIR)
+        env:
+        - name: SRC_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: src-host
+        - name: SRC_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: src-port
+        - name: SRC_USER
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: src-user
+        - name: SRC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-migration-secrets
+              key: src-password
+        - name: DST_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: dst-host
+        - name: DST_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: dst-port
+        - name: DST_USER
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: dst-user
+        - name: DST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-migration-secrets
+              key: dst-password
+        - name: DUMP_DIR
+          valueFrom:
+            configMapKeyRef:
+              name: pg-migration-config
+              key: dump-dir
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: dump-volume
+          mountPath: /tmp/pg_migration
+      volumes:
+      - name: dump-volume
+        emptyDir:
+          sizeLimit: 10Gi
+

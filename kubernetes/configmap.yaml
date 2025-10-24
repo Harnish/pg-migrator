@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pg-migration-config
+  namespace: default
+data:
+  src-host: "postgresql"
+  src-port: "5432"
+  src-user: "postgres"
+  dst-host: "postgresql18"
+  dst-port: "5432"
+  dst-user: "postgres"
+  dump-dir: "/tmp/pg_migration"
